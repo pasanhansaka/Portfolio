@@ -329,4 +329,5 @@ window.addEventListener('scroll', ()=>{
   const vh = window.innerHeight;
   const total = r.height;
   const visible = Math.min(Math.max(vh*0.7 - r.top, 0), total);
-  bar.style.height = (vis
+  bar.style.height = (visible/total*100)+'%';
+});
