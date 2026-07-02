@@ -1,96 +1,127 @@
-<div align="center">
-
 # PASAN HANSAKA
 
-### This is my portfolio — and this is how I built it
+<div align="center">
 
-**[→ Visit the live site](https://pasanhansaka.github.io/Portfolio/)**
+```
+██████╗  █████╗ ███████╗ █████╗ ███╗   ██╗    ██╗  ██╗ █████╗ ███╗   ██╗███████╗ █████╗ ██╗  ██╗ █████╗ 
+██╔══██╗██╔══██╗██╔════╝██╔══██╗████╗  ██║    ██║  ██║██╔══██╗████╗  ██║██╔════╝██╔══██╗██║  ██║██╔══██╗
+██████╔╝███████║███████╗███████║██╔██╗ ██║    ███████║███████║██╔██╗ ██║███████╗███████║███████║███████║
+██╔═══╝ ██╔══██║╚════██║██╔══██║██║╚██╗██║    ██╔══██║██╔══██║██║╚██╗██║╚════██║██╔══██║██╔══██║██╔══██║
+██║     ██║  ██║███████║██║  ██║██║ ╚████║    ██║  ██║██║  ██║██║ ╚████║███████║██║  ██║██║  ██║██║  ██║
+╚═╝     ╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═══╝    ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝
+```
 
-![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
-![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
-![GSAP](https://img.shields.io/badge/GSAP-88CE02?style=for-the-badge&logo=greensock&logoColor=white)
+### pasan.sys // CYBERPUNK PORTFOLIO CONSOLE v2.0
+
+<table>
+  <tr>
+    <td align="center"><b>STATUS:</b> 🟢 ONLINE</td>
+    <td align="center"><b>ROUTE:</b> SECURE/SSL</td>
+    <td align="center"><b>GATEWAY:</b> FORMSUBMIT_AJAX</td>
+  </tr>
+</table>
+
+**[→ ACCESS INTERACTIVE INTERFACE (LIVE SITE)](https://pasanhansaka.github.io/Portfolio/)**
+
+[![HTML5](https://img.shields.io/badge/HTML5-%2335f0c9.svg?style=for-the-badge&logo=html5&logoColor=0c0616)](https://developer.mozilla.org/en-US/docs/Web/HTML)
+[![CSS3](https://img.shields.io/badge/CSS3-%237c5cff.svg?style=for-the-badge&logo=css3&logoColor=ffffff)](https://developer.mozilla.org/en-US/docs/Web/CSS)
+[![JavaScript](https://img.shields.io/badge/JavaScript-%23ff3fa8.svg?style=for-the-badge&logo=javascript&logoColor=ffffff)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 
 </div>
 
 ---
 
-## 👋 Hey, I'm Pasan
+## ⚡ SYSTEM OVERVIEW
 
-I'm a Software Engineering Intern at **Synapse Solutions**, currently building out the Facebook Marketing Campaign feature on the **dwesk Social CRM** platform — wiring the Meta Marketing API into a Java Spring MVC / AngularJS stack. Outside of that, I hold a BSc (Hons) in Software Engineering from the Java Institute for Advanced Technology (affiliated with Birmingham City University, UK).
+I'm a Software Engineering Intern at **Synapse Solutions**, currently integrating Meta Marketing API capabilities into **dwesk Social CRM** (leveraging a Java Spring MVC / AngularJS core). I hold a BSc (Hons) in Software Engineering from the Java Institute for Advanced Technology, affiliated with Birmingham City University, UK.
 
-This repository is my portfolio site — not a template, not a starter kit, just the actual code behind [pasanhansaka.github.io/Portfolio](https://pasanhansaka.github.io/Portfolio/). I wanted a portfolio that didn't feel like a static résumé you skim for ten seconds. So instead of a normal landing page, it boots up like a system, drops you into a reactive particle background, and lets you dig through my work the way I'd actually want to explore someone else's — scroll through it, or drop into a terminal and type your way around.
+This repository hosts my personal portfolio — designed as a retro-futuristic cyberpunk command deck. Built entirely in vanilla HTML, CSS, and JS with no compile step, it features interactive node particle physics, customized custom cursors, procedurally synthesized UI audio notes, and a responsive CLI terminal console.
 
-Everything on the site — the boot sequence, the particle physics, the sound design, the CLI shell — I built by hand, in plain HTML/CSS/JS, with no frameworks and no build step.
-
----
-
-## ✨ What's on the site
-
-| Feature | Description |
-|---|---|
-| 🖥️ **Boot Sequence** | A simulated system boot animation plays on load, complete with progress bar and typewriter-style log lines |
-| ⌨️ **Interactive CLI Terminal** | Press <kbd>`</kbd> or click `[CLI_]` to open a real virtual shell — supports `about`, `skills`, `projects`, `open <#>`, `theme`, `matrix`, `clear`, and more |
-| 🌌 **Physics-Based Particle Network** | A canvas-rendered node network reacts to mouse movement with repulsion physics, click-triggered sparks, and shockwave ripples |
-| 🟢 **Matrix Rain Mode** | Toggle a full digital-rain easter egg straight from the terminal |
-| 🌗 **Dark / Light Theme** | Persisted theme switch that dynamically re-themes the canvas, GitHub Snake SVG, and every design token |
-| 🔊 **Web Audio Sound Design** | Procedurally synthesized UI sounds (hover, click, boot, success, error) generated live via the Web Audio API — no audio files |
-| 🖱️ **Custom Cursor** | A magnetic dot-and-ring cursor with contextual labels (`VIEW`, `OPEN`, `DRAG`, etc.) on desktop |
-| 📊 **Live GitHub Integration** | Auto-updating GitHub stats, top languages, contribution graph, and a snake-eats-contributions animation |
-| 🗂️ **Draggable Project Deck** | A horizontally scrollable, pointer-draggable showcase of projects with 3D tilt-on-hover cards |
-| 📈 **Scroll-Synced Timeline** | Experience section fills a progress line as you scroll through it |
-| 🔒 **Accessibility-Aware** | Full `prefers-reduced-motion` support — disables animations, cursor effects, and particle motion for users who need it |
-| 📱 **Fully Responsive** | Custom cursor, side HUD rails, and diagnostics panel gracefully hide below the relevant breakpoints |
+```javascript
+const pasan = {
+  name:      "Pasan Hansaka",
+  based:     "Kalutara, Sri Lanka",
+  degree:    "BSc (Hons) Software Engineering",
+  institute: "Java Institute for Advanced Technology",
+  affiliate: "Birmingham City University, UK",
+  role:      "SE Intern @ Synapse Solutions",
+  building:  "contribute dwesk CRM",
+  approach:  ["ship in small loops", "debug at the root", "design with intent"],
+  alsoDoes:  "writes LinkedIn deep-dives on API & DB design"
+};
+```
 
 ---
 
-## 🛠️ Tech Stack
+## 🛠️ INTERFACE SPECIFICATIONS
 
-- **Structure & Style:** Semantic HTML5, CSS3 (custom properties for theming, no preprocessor)
-- **Animation:** [GSAP](https://gsap.com/) + ScrollTrigger for boot sequence & reveals
-- **Interactivity:** Vanilla JavaScript (ES6+) — IIFE modules for cursor, sound, terminal, canvas FX
-- **Audio:** Web Audio API (oscillator-based procedural sound synthesis)
-- **Graphics:** HTML5 Canvas for the particle network & matrix rain
-- **Fonts:** Space Grotesk, Plus Jakarta Sans, JetBrains Mono (Google Fonts)
-- **Live Data:** [github-readme-stats](https://github.com/anuraghazra/github-readme-stats), [github-readme-activity-graph](https://github.com/Ashutosh00710/github-readme-activity-graph), [platane/snk](https://github.com/Platane/snk)
+| Component | Technology | Diagnostic Description |
+|---|---|---|
+| **Simulation Boot** | HTML / CSS Keyframes | Interactive boot logs printing simulated system checks on initialize sequence. |
+| **Hologram Projector** | CSS 3D Transforms / Filters | 3D perspective floating card projecting real colors with chromatic aberration and active glitch triggers. |
+| **Terminal Console** | JavaScript / DOM API | Built-in CLI triggerable via <kbd>`</kbd> supporting standard shell instructions (`skills`, `projects`, `matrix`). |
+| **Physics Particles** | Canvas 2D / Vector Physics | High-performance interactive node canvas reacting to mouse positions with repulsion physics. |
+| **Audio Synthesizer** | Web Audio API | Oscillator-based synthesized sound effects generating micro-click feedbacks, typing notes, and alerts. |
+| **Projects Deck** | Flexbox / Pointer Drag | Draggable sliding project drawer featuring 3D tilt-on-hover cards and responsive fill scrollbars. |
+| **Scroll Timeline** | Passive Scroll RAF Loop | centrale scroll reveals filling timeline progress bounds cleanly without observers lag. |
 
 ---
 
-## 📁 How It's Put Together
+## 📊 LIVE METRICS (DIAGNOSTIC REPORT)
+
+<div align="center">
+
+<img src="https://github-readme-stats-sigma-five.vercel.app/api?username=pasanhansaka&show_icons=true&theme=tokyonight&hide_border=true&bg_color=0c0616&title_color=ff3fa8&icon_color=7c5cff&text_color=e2e8f0&ring_color=7c5cff&include_all_commits=true&count_private=true" width="48%" alt="GitHub Stats" />
+<img src="https://github-readme-stats-sigma-five.vercel.app/api/top-langs/?username=pasanhansaka&layout=compact&theme=tokyonight&hide_border=true&bg_color=0c0616&title_color=ff3fa8&text_color=e2e8f0&langs_count=8" width="48%" alt="Top Languages" />
+
+<br/><br/>
+
+<img src="https://github-readme-activity-graph.vercel.app/graph?username=pasanhansaka&theme=tokyo-night&hide_border=true&bg_color=0c0616&color=ff3fa8&line=7c5cff&point=35f0c9&area=true&area_color=3f2591&custom_title=Contribution%20Activity" width="100%" alt="Contribution activity graph" />
+
+<br/><br/>
+
+<img src="https://raw.githubusercontent.com/pasanhansaka/portfolio/output/github-snake-dark.svg" width="100%" alt="Snake contribution animation" />
+
+</div>
+
+---
+
+## 📁 DIRECTORY STRUCTURE
 
 ```
 Portfolio/
-├── index.html      # Markup & content
-├── style.css        # Design tokens, theming, layout, animations
-├── script.js         # Boot sequence, terminal, canvas FX, theme & sound managers
+├── assets/         # Project assets, CV PDFs, and branding logos
+├── index.html      # Structural templates, console grids, and form overlays
+├── style.css        # Variables, hologram projections, scroll tracks, and breakpoints
+├── script.js         # Sound synthesis, console shell engine, particles, and AJAX submitters
 └── README.md
 ```
 
-No bundler, no build step, no npm install — I kept it to three files on purpose so the whole thing stays easy to reason about and easy to keep evolving as I add more to it.
-
-If you want to poke around it locally:
-
+To run this console interface locally:
 ```bash
 git clone https://github.com/pasanhansaka/Portfolio.git
 cd Portfolio
-# just open index.html — or serve it:
+# Just double click index.html or run:
 npx serve .
 ```
 
 ---
 
-## 📬 Get in Touch
+## 📬 GATEWAY CHANNELS
 
-Open to freelance work, collaborations, or just talking shop about engineering and design.
+Open to freelance work, collaborations, or discussing software systems and DB design.
 
-- 💼 LinkedIn: [linkedin.com/in/pasanhansaka](https://linkedin.com/in/pasanhansaka)
-- 📧 Email: [pasanhansaka31@gmail.com](mailto:pasanhansaka31@gmail.com)
-- 🌐 Portfolio: [pasanhansaka.github.io/Portfolio](https://pasanhansaka.github.io/Portfolio/)
-
----
+* 💼 **LinkedIn Profile:** [linkedin.com/in/pasanhansaka](https://linkedin.com/in/pasanhansaka)
+* 📧 **Secured Mailbox:** [pasanhansaka31@gmail.com](mailto:pasanhansaka31@gmail.com)
+* 🌐 **Console Link:** [pasanhansaka.github.io/Portfolio](https://pasanhansaka.github.io/Portfolio/)
 
 <div align="center">
 
-<sub>Designed & built by Pasan Hansaka, from Kalutara, Sri Lanka.</sub>
+```
+pasan.sys // TERMINAL DISCONNECT... [SUCCESS]
+> BYE_
+```
+
+<sub>Designed & built by Pasan Hansaka. Kalutara, Sri Lanka.</sub>
 
 </div>
