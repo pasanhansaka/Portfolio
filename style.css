@@ -279,8 +279,20 @@ h2.head{
 .marquee-track span::after{ content:'◆'; color:var(--violet); font-size:9px; }
  
 /* ============================= ABOUT ============================= */
-.about-grid{ display:grid; grid-template-columns:1.1fr 0.9fr; gap:40px; align-items:start; }
-@media (max-width:860px){ .about-grid{ grid-template-columns:1fr; } }
+.code-pre {
+  white-space: pre;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--line) transparent;
+  padding-bottom: 8px;
+}
+.code-pre::-webkit-scrollbar {
+  height: 4px;
+}
+.code-pre::-webkit-scrollbar-thumb {
+  background: var(--line);
+  border-radius: 2px;
+}
 .code-card{
   background:var(--ink); border:1px solid var(--line); border-radius:6px;
   padding:30px 32px; font-family:var(--font-mono); font-size:13px; line-height:1.95;

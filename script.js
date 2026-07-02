@@ -249,7 +249,23 @@ if (!REDUCED && window.matchMedia('(min-width:861px)').matches) {
     }
     
     // Bind on start and watch DOM
-    document.addEventListener('DOMContentLoaded', bindCursorEffects);
+    document.addEventListener('DOMContentLoaded', () => {
+      bindCursorEffects();
+      
+      // Hide custom cursor and restore default browser cursor inside PDF iframe
+      const cvBody = document.querySelector('.cv-body');
+      if (cvBody) {
+        cvBody.addEventListener('mouseenter', () => {
+          dot.style.opacity = '0';
+          ring.style.opacity = '0';
+          label.classList.remove('show');
+        });
+        cvBody.addEventListener('mouseleave', () => {
+          dot.style.opacity = '1';
+          ring.style.opacity = '1';
+        });
+      }
+    });
     window.bindCursorEffects = bindCursorEffects;
   }
 }
@@ -374,13 +390,6 @@ function startPageAnims() {
   }
 
   document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
-
-  // Fallback: force reveal all elements after 2.5 seconds in case observer failed to trigger
-  setTimeout(() => {
-    document.querySelectorAll('.reveal:not(.in)').forEach(el => {
-      el.classList.add('in');
-    });
-  }, 2500);
 
   const decryptObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
