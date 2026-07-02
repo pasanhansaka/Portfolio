@@ -376,16 +376,16 @@ function decryptEl(el, onDone) {
   render();
 }
 
-/* ---------- SCROLL REVEALS (SINGLE-TRIGGER) ---------- */
-// Generous threshold to ensure trigger on modern devices and fast scroll
+/* ---------- SCROLL REVEALS (REVEAL & HIDE ON SCROLL) ---------- */
 const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       entry.target.classList.add('in');
-      revealObserver.unobserve(entry.target); // Reveal once and stay visible
+    } else {
+      entry.target.classList.remove('in');
     }
   });
-}, { threshold: 0.01, rootMargin: "0px 0px 50px 0px" });
+}, { threshold: 0.01, rootMargin: "0px 0px -50px 0px" });
 
 function startPageAnims() {
   // Safe fallback if IntersectionObserver is not supported
