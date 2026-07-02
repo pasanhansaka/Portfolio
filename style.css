@@ -603,10 +603,10 @@ body::before {
 
 /* ============================= HERO PROFILE & GRID ============================= */
 .hero {
-  display: flex !important;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
+  display: grid !important;
+  grid-template-columns: 1.25fr 0.75fr;
+  gap: 50px;
+  align-items: center;
   min-height: 100svh;
   padding-top: 140px;
 }
@@ -618,15 +618,15 @@ body::before {
 }
 .profile-avatar-wrap {
   position: relative;
-  width: 140px;
-  height: 140px;
+  width: 280px;
+  height: 280px;
   border-radius: 50%;
-  padding: 3px;
+  padding: 4.5px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 28px;
-  box-shadow: 0 0 25px rgba(124, 92, 255, 0.25);
+  margin: 0 auto;
+  box-shadow: 0 0 35px rgba(124, 92, 255, 0.25);
   transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.4s ease;
   overflow: hidden;
 }
@@ -691,9 +691,12 @@ body::before {
 
 @media (max-width: 960px) {
   .hero {
+    display: flex !important;
+    flex-direction: column;
     align-items: center;
     text-align: center;
     padding-top: 120px;
+    gap: 40px;
   }
   .hero-tag {
     margin-left: auto;
@@ -707,10 +710,11 @@ body::before {
     justify-content: center;
   }
   .profile-avatar-wrap {
+    order: -1;
     margin-left: auto;
     margin-right: auto;
-    width: 120px;
-    height: 120px;
+    width: 180px;
+    height: 180px;
   }
 }
 

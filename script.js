@@ -340,9 +340,11 @@ function tickClock() {
 tickClock();
 setInterval(tickClock, 1000);
 
-/* ---------- THROTTLED SCROLL PROGRESS & NAV TRANSITION & TIMELINE FILL ---------- */
+/* ---------- THROTTLED SCROLL PROGRESS & NAV TRANSITION & TIMELINE FILL & REVEALS ---------- */
 let scrollTicker = false;
 function handleScroll() {
+  const vh = window.innerHeight || document.documentElement.clientHeight;
+
   // 1. Scroll Progress Bar & Nav Transition
   const h = document.documentElement;
   const progressPercent = (h.scrollTop) / (h.scrollHeight - h.clientHeight) * 100;
@@ -363,11 +365,22 @@ function handleScroll() {
   const tlBar = document.getElementById('tlProgress');
   if (tl && tlBar) {
     const r = tl.getBoundingClientRect();
-    const vh = window.innerHeight || document.documentElement.clientHeight;
     const total = r.height;
     const visible = Math.min(Math.max(vh * 0.7 - r.top, 0), total);
     tlBar.style.height = (visible / total * 100) + '%';
   }
+
+  // 3. Scroll Reveals (Reveal & Hide on Scroll)
+  const reveals = document.querySelectorAll('.reveal');
+  reveals.forEach(el => {
+    const rect = el.getBoundingClientRect();
+    // Reveal if any part enters the viewport (with a 40px buffer)
+    if (rect.top < vh - 40 && rect.bottom > 40) {
+      el.classList.add('in');
+    } else {
+      el.classList.remove('in');
+    }
+  });
 
   scrollTicker = false;
 }
@@ -406,35 +419,9 @@ function decryptEl(el, onDone) {
   render();
 }
 
-/* ---------- SCROLL REVEALS (REVEAL & HIDE ON SCROLL) ---------- */
-const revealObserver = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) {
-      entry.target.classList.add('in');
-    } else {
-      // Only remove the 'in' class if the element is truly outside the viewport area.
-      // This prevents elements inside the viewport from being incorrectly hidden on initial load.
-      const rect = entry.boundingClientRect;
-      const vh = window.innerHeight || document.documentElement.clientHeight || 800;
-      if (rect.top > vh || rect.bottom < 0) {
-        entry.target.classList.remove('in');
-      }
-    }
-  });
-}, { threshold: 0.01, rootMargin: "100px 0px 100px 0px" });
-
 function startPageAnims() {
-  // Safe fallback if IntersectionObserver is not supported
-  if (!window.IntersectionObserver) {
-    document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
-    document.querySelectorAll('.decrypt').forEach(el => {
-      const final = el.dataset.text || el.textContent;
-      el.textContent = final;
-    });
-    return;
-  }
-
-  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+  // Trigger initial reveals on start
+  handleScroll();
 
   const decryptObserver = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
