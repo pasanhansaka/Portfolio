@@ -426,8 +426,8 @@ function decryptEl(el, onDone) {
   const final = el.dataset.text || el.textContent;
   const len = final.length;
   let frame = 0;
-  const totalFrames = len * 3 + 15;
-  const revealAt = Array.from({ length: len }, (_, i) => Math.floor(i * (totalFrames / len)) + Math.random() * 5);
+  const totalFrames = 16;
+  const revealAt = Array.from({ length: len }, () => Math.floor(Math.random() * totalFrames * 0.7));
   function render() {
     let out = '';
     for (let i = 0; i < len; i++) {
@@ -532,11 +532,15 @@ const fxController = (function fx() {
   if (!ctx) return {};
   let W, H, DPR;
 
-  let matrixMode = false;
+  let bgMode = 'constellation'; // 'matrix', 'vector', 'constellation'
+  let dashes = [];
   let nodes = [];
   let sparks = [];
   let ripples = [];
   let mouse = { x: -9999, y: -9999, active: false };
+  let lastPulseX = -9999;
+  let lastPulseY = -9999;
+  let lastPulseTime = 0;
 
   let lineRGB = '124,92,255';
   let nodeRGB = '210,200,255';
@@ -561,6 +565,7 @@ const fxController = (function fx() {
     canvas.style.width = W + 'px'; canvas.style.height = H + 'px';
     ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
 
+    buildDashes();
     buildNodes();
 
     // Rebuild matrix structure
@@ -568,8 +573,35 @@ const fxController = (function fx() {
     drops = Array(columns).fill().map(() => Math.floor(Math.random() * -30));
   }
 
+  function buildDashes() {
+    dashes = [];
+    const spacing = window.innerWidth < 720 ? 44 : 36;
+    const cx = W / 2;
+    const cy = H / 2;
+
+    for (let x = spacing / 2; x < W; x += spacing) {
+      for (let y = spacing / 2; y < H; y += spacing) {
+        const baseAngle = Math.atan2(y - cy, x - cx);
+        const xRatio = x / W;
+        const yRatio = y / H;
+        // Hue gradient: cyan/blue (190) at bottom-left to magenta/red (350) at top-right
+        const hue = 190 + (xRatio * 100) + (1 - yRatio) * 60;
+        dashes.push({
+          baseX: x,
+          baseY: y,
+          x: x,
+          y: y,
+          vx: 0,
+          vy: 0,
+          baseAngle: baseAngle,
+          angle: baseAngle,
+          hue: hue
+        });
+      }
+    }
+  }
+
   function buildNodes() {
-    // Increased particle density for both mobile and desktop to make it more noticeable
     const density = window.innerWidth < 720 ? 18000 : 10000;
     const count = Math.min(120, Math.round((W * H) / density));
     nodes = Array.from({ length: count }, () => {
@@ -582,7 +614,6 @@ const fxController = (function fx() {
         vy: vy,
         baseVx: vx,
         baseVy: vy,
-        // Larger and more noticeable nodes/stars
         r: Math.random() * 1.8 + 1.2
       };
     });
@@ -603,6 +634,8 @@ const fxController = (function fx() {
   window.addEventListener('touchmove', e => {
     if (e.touches && e.touches[0]) { mouse.x = e.touches[0].clientX; mouse.y = e.touches[0].clientY; mouse.active = true; }
   }, { passive: true });
+  window.addEventListener('touchend', () => { mouse.active = false; });
+  window.addEventListener('touchcancel', () => { mouse.active = false; });
 
   // Mouse Click Ripple & Spark Emission
   window.addEventListener('click', e => {
@@ -638,7 +671,7 @@ const fxController = (function fx() {
       return;
     }
 
-    if (matrixMode) {
+    if (bgMode === 'matrix') {
       // Draw cascading matrix rain
       ctx.fillStyle = ThemeManager.current() === 'light' ? 'rgba(246, 244, 251, 0.15)' : 'rgba(5, 2, 8, 0.15)';
       ctx.fillRect(0, 0, W, H);
@@ -662,70 +695,187 @@ const fxController = (function fx() {
       // Particle Network
       ctx.clearRect(0, 0, W, H);
 
-      // 1. Repulsion physics
-      for (const n of nodes) {
-        if (mouse.active) {
-          const dx = n.x - mouse.x;
-          const dy = n.y - mouse.y;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          if (dist < MOUSE_REPULSION_RADIUS) {
-            const force = (MOUSE_REPULSION_RADIUS - dist) / MOUSE_REPULSION_RADIUS;
-            n.vx += (dx / dist) * force * 0.5;
-            n.vy += (dy / dist) * force * 0.5;
-          }
+      // Mouse pulse generation
+      if (mouse.active) {
+        const dist = Math.hypot(mouse.x - lastPulseX, mouse.y - lastPulseY);
+        const now = Date.now();
+
+        // 1. Movement-based pulse (spawn if mouse has moved > 35px and at least 95ms passed since last pulse)
+        if (dist > 35 && (now - lastPulseTime > 95)) {
+          ripples.push({
+            x: mouse.x,
+            y: mouse.y,
+            r: 0,
+            maxR: 130,
+            opacity: 0.75,
+            type: 'pulse'
+          });
+          lastPulseX = mouse.x;
+          lastPulseY = mouse.y;
+          lastPulseTime = now;
         }
 
-        // Apply friction & damp velocity
-        n.vx *= 0.94;
-        n.vy *= 0.94;
-
-        // Blend back natural float vector
-        n.vx += n.baseVx * 0.06;
-        n.vy += n.baseVy * 0.06;
-
-        n.x += n.vx;
-        n.y += n.vy;
-
-        // Bouncing constraints
-        if (n.x < 0) { n.x = 0; n.vx *= -1; n.baseVx *= -1; }
-        if (n.x > W) { n.x = W; n.vx *= -1; n.baseVx *= -1; }
-        if (n.y < 0) { n.y = 0; n.vy *= -1; n.baseVy *= -1; }
-        if (n.y > H) { n.y = H; n.vy *= -1; n.baseVy *= -1; }
+        // 2. Idle pulse (spawn if mouse has been active and 1800ms passed since last pulse)
+        if (now - lastPulseTime > 1800) {
+          ripples.push({
+            x: mouse.x,
+            y: mouse.y,
+            r: 0,
+            maxR: 200,
+            opacity: 0.5,
+            type: 'pulse'
+          });
+          lastPulseX = mouse.x;
+          lastPulseY = mouse.y;
+          lastPulseTime = now;
+        }
+      } else {
+        lastPulseX = -9999;
+        lastPulseY = -9999;
       }
 
-      // 2. Draw lines between nearby nodes
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const a = nodes[i], b = nodes[j];
-          const dx = a.x - b.x, dy = a.y - b.y;
-          const d = Math.sqrt(dx * dx + dy * dy);
-          if (d < LINK_DIST) {
-            // Increased line opacity from 0.16 to 0.35 to make the network noticeably visible
-            let opacity = (1 - d / LINK_DIST) * 0.35;
+      if (bgMode === 'vector') {
+        // 1. Repulsion physics and angle calculation for vector dashes
+        const isLight = ThemeManager.current() === 'light';
+        const lightness = isLight ? '45%' : '65%';
+        const saturation = isLight ? '80%' : '85%';
+        const baseOpacity = isLight ? 0.8 : 0.65;
 
-            // Extra line glow when mouse is close to the connection midpoint
-            if (mouse.active) {
-              const mx = (a.x + b.x) / 2;
-              const my = (a.y + b.y) / 2;
-              const mdx = mx - mouse.x, mdy = my - mouse.y;
-              const md = Math.sqrt(mdx * mdx + mdy * mdy);
-              if (md < 120) {
-                opacity += (1 - md / 120) * 0.35;
-              }
+        for (const d of dashes) {
+          let targetAngle = d.baseAngle;
+          let scale = 1;
+
+          if (mouse.active) {
+            const mdx = d.x - mouse.x;
+            const mdy = d.y - mouse.y;
+            const md = Math.hypot(mdx, mdy);
+            
+            if (md < 160) {
+              const factor = 1 - md / 160;
+              const force = factor * 14;
+              
+              // Push away from cursor position
+              d.x += (mdx / (md || 1)) * force;
+              d.y += (mdy / (md || 1)) * force;
+              
+              // Rotate towards pointing away from cursor
+              targetAngle = Math.atan2(mdy, mdx);
+              
+              // Hover scale up length
+              scale = 1 + factor * 0.8;
             }
+          }
 
-            ctx.strokeStyle = `rgba(${lineRGB},${opacity})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+          // Return spring physics back to grid slots
+          const returnX = d.baseX - d.x;
+          const returnY = d.baseY - d.y;
+          
+          d.vx = (d.vx + returnX * 0.08) * 0.82;
+          d.vy = (d.vy + returnY * 0.08) * 0.82;
+          
+          d.x += d.vx;
+          d.y += d.vy;
+
+          // Smooth angle alignment
+          let diff = targetAngle - d.angle;
+          while (diff < -Math.PI) diff += Math.PI * 2;
+          while (diff > Math.PI) diff -= Math.PI * 2;
+          d.angle += diff * 0.15;
+
+          // Draw dash line segment
+          const len = 6 * scale;
+          const x1 = d.x - Math.cos(d.angle) * (len / 2);
+          const y1 = d.y - Math.sin(d.angle) * (len / 2);
+          const x2 = d.x + Math.cos(d.angle) * (len / 2);
+          const y2 = d.y + Math.sin(d.angle) * (len / 2);
+
+          ctx.strokeStyle = `hsla(${d.hue}, ${saturation}, ${lightness}, ${baseOpacity})`;
+          ctx.lineWidth = 1.6;
+          ctx.beginPath();
+          ctx.moveTo(x1, y1);
+          ctx.lineTo(x2, y2);
+          ctx.stroke();
+        }
+      } else if (bgMode === 'constellation') {
+        // 1. Repulsion physics
+        for (const n of nodes) {
+          if (mouse.active) {
+            const dx = n.x - mouse.x;
+            const dy = n.y - mouse.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            if (dist < MOUSE_REPULSION_RADIUS) {
+              const force = (MOUSE_REPULSION_RADIUS - dist) / MOUSE_REPULSION_RADIUS;
+              n.vx += (dx / dist) * force * 0.5;
+              n.vy += (dy / dist) * force * 0.5;
+            }
+          }
+
+          // Apply friction & damp velocity
+          n.vx *= 0.94;
+          n.vy *= 0.94;
+
+          // Blend back natural float vector
+          n.vx += n.baseVx * 0.06;
+          n.vy += n.baseVy * 0.06;
+
+          n.x += n.vx;
+          n.y += n.vy;
+
+          // Bouncing constraints
+          if (n.x < 0) { n.x = 0; n.vx *= -1; n.baseVx *= -1; }
+          if (n.x > W) { n.x = W; n.vx *= -1; n.baseVx *= -1; }
+          if (n.y < 0) { n.y = 0; n.vy *= -1; n.baseVy *= -1; }
+          if (n.y > H) { n.y = H; n.vy *= -1; n.baseVy *= -1; }
+        }
+
+        // 2. Draw lines between nearby nodes
+        for (let i = 0; i < nodes.length; i++) {
+          for (let j = i + 1; j < nodes.length; j++) {
+            const a = nodes[i], b = nodes[j];
+            const dx = a.x - b.x, dy = a.y - b.y;
+            const d = Math.sqrt(dx * dx + dy * dy);
+            if (d < LINK_DIST) {
+              let opacity = (1 - d / LINK_DIST) * 0.35;
+
+              // Extra line glow when mouse is close to the connection midpoint
+              if (mouse.active) {
+                const mx = (a.x + b.x) / 2;
+                const my = (a.y + b.y) / 2;
+                const mdx = mx - mouse.x, mdy = my - mouse.y;
+                const md = Math.sqrt(mdx * mdx + mdy * mdy);
+                if (md < 120) {
+                  opacity += (1 - md / 120) * 0.35;
+                }
+              }
+
+              ctx.strokeStyle = `rgba(${lineRGB},${opacity})`;
+              ctx.lineWidth = 1;
+              ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+            }
           }
         }
-      }
 
-      // 3. Draw nodes
-      for (const n of nodes) {
-        // Increased node/star opacity from 0.6 to 0.85 for stronger contrast
-        ctx.fillStyle = `rgba(${nodeRGB},0.85)`;
-        ctx.beginPath(); ctx.arc(n.x, n.y, n.r, 0, Math.PI * 2); ctx.fill();
+        // 3. Draw nodes
+        for (const n of nodes) {
+          let size = n.r;
+          let drawRGB = nodeRGB;
+          if (mouse.active) {
+            const mdx = n.x - mouse.x, mdy = n.y - mouse.y;
+            const md = Math.hypot(mdx, mdy);
+            if (md < 140) {
+              const factor = 1 - md / 140;
+              size += factor * 3.5;
+              drawRGB = ThemeManager.current() === 'light' ? '90,60,200' : '53,240,201';
+              
+              // Antigravity outer glowing outline halo around reactive nodes
+              ctx.strokeStyle = `rgba(${drawRGB}, ${factor * 0.35})`;
+              ctx.lineWidth = 1;
+              ctx.beginPath(); ctx.arc(n.x, n.y, size + 4, 0, Math.PI * 2); ctx.stroke();
+            }
+          }
+          ctx.fillStyle = `rgba(${drawRGB}, 0.85)`;
+          ctx.beginPath(); ctx.arc(n.x, n.y, size, 0, Math.PI * 2); ctx.fill();
+        }
       }
     }
 
@@ -754,9 +904,33 @@ const fxController = (function fx() {
       if (r.opacity <= 0.01) {
         ripples.splice(i, 1);
       } else {
-        ctx.strokeStyle = `rgba(${lineRGB}, ${r.opacity * 0.45})`;
-        ctx.lineWidth = 2;
-        ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2); ctx.stroke();
+        if (r.type === 'pulse') {
+          const rippleRGB = ThemeManager.current() === 'light' ? '90,60,200' : '53,240,201';
+          
+          // Smooth expanding radial color gradient
+          const grad = ctx.createRadialGradient(r.x, r.y, 0, r.x, r.y, r.r);
+          grad.addColorStop(0, `rgba(${rippleRGB}, 0)`);
+          grad.addColorStop(0.85, `rgba(${rippleRGB}, ${r.opacity * 0.02})`);
+          grad.addColorStop(1, `rgba(${rippleRGB}, ${r.opacity * 0.12})`);
+          ctx.fillStyle = grad;
+          ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2); ctx.fill();
+
+          // Concentric double lines
+          ctx.strokeStyle = `rgba(${rippleRGB}, ${r.opacity * 0.25})`;
+          ctx.lineWidth = 1.2;
+          ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2); ctx.stroke();
+
+          if (r.r > 25) {
+            ctx.strokeStyle = `rgba(${rippleRGB}, ${r.opacity * 0.1})`;
+            ctx.lineWidth = 0.8;
+            ctx.beginPath(); ctx.arc(r.x, r.y, r.r - 25, 0, Math.PI * 2); ctx.stroke();
+          }
+        } else {
+          // Default click ripples
+          ctx.strokeStyle = `rgba(${lineRGB}, ${r.opacity * 0.45})`;
+          ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2); ctx.stroke();
+        }
       }
     }
 
@@ -766,11 +940,29 @@ const fxController = (function fx() {
   requestAnimationFrame(step);
 
   function toggleMatrix() {
-    matrixMode = !matrixMode;
-    return matrixMode;
+    if (bgMode === 'matrix') {
+      bgMode = 'vector';
+    } else {
+      bgMode = 'matrix';
+    }
+    return bgMode === 'matrix';
   }
 
-  return { setTheme, toggleMatrix, isMatrix: () => matrixMode };
+  function setBgMode(newMode) {
+    if (['matrix', 'vector', 'constellation'].includes(newMode)) {
+      bgMode = newMode;
+      return true;
+    }
+    return false;
+  }
+
+  return { 
+    setTheme, 
+    toggleMatrix, 
+    isMatrix: () => bgMode === 'matrix',
+    getBgMode: () => bgMode,
+    setBgMode
+  };
 })();
 window.fxController = fxController;
 
@@ -888,7 +1080,7 @@ const TerminalConsole = (function shell() {
     line.className = 'terminal-line ' + className;
     line.innerHTML = text;
     output.appendChild(line);
-    body.scrollTop = body.scrollHeight;
+    output.scrollTop = output.scrollHeight;
   }
 
   function runCmd(cmdStr) {
@@ -905,16 +1097,16 @@ const TerminalConsole = (function shell() {
     switch (cmd) {
       case 'help':
         printLine('Available Terminal Commands:');
-        printLine('  help      - Show this reference panel');
-        printLine('  about     - Read software engineer profile');
-        printLine('  skills    - View technical core competencies');
-        printLine('  projects  - Show indexed github repositories');
-        printLine('  open <#>  - Open project repository link (1-8) in new tab');
-        printLine('  resume    - Launch interactive resume viewer module');
-        printLine('  theme     - Toggle light / dark display theme');
-        printLine('  matrix    - Toggle green matrix digital rain mode');
-        printLine('  clear     - Wipe shell logs');
-        printLine('  exit      - Close secure session link');
+        printLine('  help          - Show this reference panel');
+        printLine('  about         - Read software engineer profile');
+        printLine('  skills        - View technical core competencies');
+        printLine('  projects      - Show indexed github repositories');
+        printLine('  open <#>      - Open project repository link (1-8) in new tab');
+        printLine('  resume        - Launch interactive resume viewer module');
+        printLine('  theme         - Toggle light / dark display theme');
+        printLine('  matrix [mode] - Set background (matrix, vector, constellation) or toggle next');
+        printLine('  clear         - Wipe shell logs');
+        printLine('  exit          - Close secure session link');
         break;
 
       case 'cv':
@@ -930,9 +1122,9 @@ const TerminalConsole = (function shell() {
       case 'about':
         printLine('Engineer: Pasan Hansaka');
         printLine('Degree: BSc (Hons) Software Engineering (Java Institute / BCU)');
-        printLine('Status: Software Engineering Intern @ Synapse Solutions Pvt. Ltd.');
+        printLine('Status: Software Engineering Intern');
         printLine('Focus: Java Enterprise, Spring, Node.js, and Modern JS frameworks.');
-        printLine('Bio: Shipping dwesk CRM capabilities and API database systems.');
+        printLine('Bio: Shipping high-performance API integrations and backend services.');
         break;
 
       case 'skills':
@@ -975,9 +1167,27 @@ const TerminalConsole = (function shell() {
         break;
 
       case 'matrix':
-        const mode = fxController.toggleMatrix();
-        printLine('Matrix Code Rain Mode ' + (mode ? 'ENABLED' : 'DISABLED') + '.', 'success-msg');
-        SoundManager.play('success');
+        if (args[1]) {
+          const targetMode = args[1].toLowerCase();
+          if (fxController.setBgMode(targetMode)) {
+            printLine('System settings updated: background set to ' + targetMode.toUpperCase() + '.', 'success-msg');
+            SoundManager.play('success');
+          } else {
+            printLine('Error: Invalid background mode. Choose from: matrix | vector | constellation.', 'error-msg');
+            SoundManager.play('error');
+          }
+        } else {
+          // Toggle next mode sequentially: vector -> constellation -> matrix -> vector...
+          const currentMode = fxController.getBgMode();
+          let nextMode = 'vector';
+          if (currentMode === 'vector') nextMode = 'constellation';
+          else if (currentMode === 'constellation') nextMode = 'matrix';
+          else if (currentMode === 'matrix') nextMode = 'vector';
+          
+          fxController.setBgMode(nextMode);
+          printLine('Background mode toggled. Current setting: ' + nextMode.toUpperCase() + '.', 'success-msg');
+          SoundManager.play('success');
+        }
         break;
 
       case 'clear':
@@ -1035,6 +1245,24 @@ const TerminalConsole = (function shell() {
         if (document.activeElement === input) return;
         e.preventDefault();
         toggle();
+      }
+    });
+
+    // Close terminal when clicking outside container
+    if (overlay) {
+      overlay.addEventListener('click', e => {
+        if (e.target === overlay) {
+          toggle();
+        }
+      });
+    }
+
+    // Close terminal on ESC key press
+    window.addEventListener('keydown', e => {
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        if (overlay && !overlay.classList.contains('terminal-hidden')) {
+          toggle();
+        }
       }
     });
   }

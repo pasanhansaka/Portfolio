@@ -31,7 +31,7 @@
 
 ## ⚡ SYSTEM OVERVIEW
 
-I'm a Software Engineering Intern at **Synapse Solutions**, currently integrating Meta Marketing API capabilities into **dwesk Social CRM** (leveraging a Java Spring MVC / AngularJS core). I hold a BSc (Hons) in Software Engineering from the Java Institute for Advanced Technology, affiliated with Birmingham City University, UK.
+I'm a Software Engineering Intern specializing in backend systems and enterprise API integrations. I hold a BSc (Hons) in Software Engineering from the Java Institute for Advanced Technology, affiliated with Birmingham City University, UK.
 
 This repository hosts my personal portfolio — designed as a retro-futuristic cyberpunk command deck. Built entirely in vanilla HTML, CSS, and JS with no compile step, it features interactive node particle physics, customized custom cursors, procedurally synthesized UI audio notes, and a responsive CLI terminal console.
 
@@ -42,8 +42,8 @@ const pasan = {
   degree:    "BSc (Hons) Software Engineering",
   institute: "Java Institute for Advanced Technology",
   affiliate: "Birmingham City University, UK",
-  role:      "SE Intern @ Synapse Solutions",
-  building:  "contribute dwesk CRM",
+  role:      "Software Engineering Intern @ Synapse Solutions",
+  building:  "enterprise CRM integrations",
   approach:  ["ship in small loops", "debug at the root", "design with intent"],
   alsoDoes:  "writes LinkedIn deep-dives on API & DB design"
 };
@@ -99,8 +99,10 @@ To run this console interface locally:
 ```bash
 git clone https://github.com/pasanhansaka/Portfolio.git
 cd Portfolio
+
 # Just double click index.html or run:
 npx serve .
+
 ```
 
 ---
