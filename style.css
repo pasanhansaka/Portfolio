@@ -520,7 +520,7 @@ h2.head{
 .deck-nav{ font-family:var(--font-mono); font-size:11px; color:var(--muted-dim); letter-spacing:2px; display:flex; align-items:center; gap:14px; }
 .deck-nav span{ color:var(--text); }
 .deck-scroll{
-  display:flex; gap:22px; overflow-x:auto; padding:10px 0 30px; scroll-snap-type:x proximity;
+  display:flex; gap:22px; overflow-x:auto; padding:10px 0 30px; scroll-snap-type:x mandatory;
   scrollbar-width:none;
 }
 .deck-scroll::-webkit-scrollbar{ display:none; }
