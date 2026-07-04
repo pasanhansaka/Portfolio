@@ -1516,7 +1516,10 @@ const ContactForm = (function contactFormModule() {
       formData.forEach((value, key) => { payload[key] = value; });
 
       try {
-        const responsePromise = fetch('https://formsubmit.co/ajax/44c8434e77d06754177b1fd1ab98cd6c', {
+        // Custom contact form backend SMTP API URL.
+        const API_ENDPOINT = 'https://contact-me-teal.vercel.app/api/contact';
+
+        const responsePromise = fetch(API_ENDPOINT, {
           method: 'POST',
           headers: { 
             'Content-Type': 'application/json',
@@ -1529,7 +1532,7 @@ const ContactForm = (function contactFormModule() {
         const json = await response.json();
 
         const endLogs = [];
-        if (response.status === 200 && json.success) {
+        if (response.ok && json.success) {
           SoundManager.play('success');
           endLogs.push({ text: 'SYSTEM: UPLINK RECEIVED AND ACKNOWLEDGED.', type: 'success', delay: 150 });
           endLogs.push({ text: `SYSTEM: TX_HASH = [${Math.random().toString(16).substring(2, 10).toUpperCase()}_${Date.now().toString().substring(8)}]`, type: 'success', delay: 150 });

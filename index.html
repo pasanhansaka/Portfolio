@@ -435,14 +435,12 @@
       <div class="console-hud-bar">
         <span>ROUTE: SECURE/SSL</span>
         <span>PAYLOAD: USER_INQUIRY</span>
-        <span>GATEWAY: FORMSUBMIT_AJAX</span>
+        <span>GATEWAY: CUSTOM_SMTP_API</span>
       </div>
 
       <form id="contactForm" novalidate autocomplete="off">
-        <!-- Formsubmit.co AJAX Endpoint Configuration -->
-        <input type="hidden" name="_subject" value="New Portfolio Inquiry from pasan.sys">
-        <input type="text" name="_honey" style="display:none">
-        <input type="hidden" name="_captcha" value="false">
+        <!-- Custom SMTP Honeypot: Invisible to human users but catches bots -->
+        <input type="text" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
 
         <div class="form-group-cyber">
           <div class="field-meta">
