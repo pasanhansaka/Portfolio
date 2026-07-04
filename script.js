@@ -1427,11 +1427,13 @@ const ContactForm = (function contactFormModule() {
 
     const nameInput = document.getElementById('name');
     const emailInput = document.getElementById('email');
+    const phoneInput = document.getElementById('phone');
+    const subjectInput = document.getElementById('subject');
     const msgInput = document.getElementById('message');
     const submitBtn = document.getElementById('submitBtn');
 
     // Reset validation errors on input change and play typing/click sounds
-    [nameInput, emailInput, msgInput].forEach(input => {
+    [nameInput, emailInput, phoneInput, subjectInput, msgInput].forEach(input => {
       if (input) {
         input.addEventListener('focus', () => {
           SoundManager.play('click');
@@ -1481,13 +1483,27 @@ const ContactForm = (function contactFormModule() {
         logs.push({ text: `02 (RETURN_ROUTE) = [${emailInput.value.trim().substring(0, 20)}...] ... OK`, type: 'success', delay: 100 });
       }
 
-      // Validate Message
+      // Validate Phone (Optional)
+      if (phoneInput && phoneInput.value.trim()) {
+        logs.push({ text: `03 (PHONE) = [${phoneInput.value.trim().substring(0, 16)}] ... OK`, type: 'success', delay: 100 });
+      } else {
+        logs.push({ text: '03 (PHONE) = [NOT_PROVIDED] ... OK', type: 'success', delay: 100 });
+      }
+
+      // Validate Subject (Optional)
+      if (subjectInput && subjectInput.value.trim()) {
+        logs.push({ text: `04 (SUBJECT) = [${subjectInput.value.trim().substring(0, 24)}] ... OK`, type: 'success', delay: 100 });
+      } else {
+        logs.push({ text: '04 (SUBJECT) = [NOT_PROVIDED] ... OK', type: 'success', delay: 100 });
+      }
+
+      // Validate Message (now 05)
       if (!msgInput || !msgInput.value.trim()) {
         hasError = true;
         if (msgInput) msgInput.closest('.form-group-cyber').classList.add('invalid');
-        logs.push({ text: 'ERR: MESSAGE_BODY (03) CONTAINS NO PAYLOAD DATA.', type: 'error', delay: 100 });
+        logs.push({ text: 'ERR: MESSAGE_BODY (05) CONTAINS NO PAYLOAD DATA.', type: 'error', delay: 100 });
       } else {
-        logs.push({ text: `03 (PAYLOAD) = [${msgInput.value.trim().length} BYTES] ... OK`, type: 'success', delay: 100 });
+        logs.push({ text: `05 (PAYLOAD) = [${msgInput.value.trim().length} BYTES] ... OK`, type: 'success', delay: 100 });
       }
 
       if (hasError) {
@@ -1504,16 +1520,17 @@ const ContactForm = (function contactFormModule() {
       logs.push({ text: 'SYSTEM: ENCRYPTING DATA WITH SSL/AES-256...', type: 'system', delay: 250 });
       logs.push({ text: 'SYSTEM: DISPATCHING TRANSMISSION TO SECURED GATEWAY...', type: 'system', delay: 300 });
 
-      // Disable inputs and buttons
-      if (submitBtn) submitBtn.disabled = true;
-      [nameInput, emailInput, msgInput].forEach(inp => { if (inp) inp.disabled = true; });
-
-      // Start printing logs
-      const logPromise = printLogs(logs);
-      
+      // Capture form data payload first (disabled inputs are ignored by FormData)
       const formData = new FormData(form);
       const payload = {};
       formData.forEach((value, key) => { payload[key] = value; });
+
+      // Disable inputs and buttons for the UI loading state
+      if (submitBtn) submitBtn.disabled = true;
+      [nameInput, emailInput, phoneInput, subjectInput, msgInput].forEach(inp => { if (inp) inp.disabled = true; });
+
+      // Start printing logs
+      const logPromise = printLogs(logs);
 
       try {
         // Custom contact form backend SMTP API URL.
@@ -1554,7 +1571,7 @@ const ContactForm = (function contactFormModule() {
         showToast('Connection interrupted. Please verify connection and retry.', 'error');
       } finally {
         if (submitBtn) submitBtn.disabled = false;
-        [nameInput, emailInput, msgInput].forEach(inp => { if (inp) inp.disabled = false; });
+        [nameInput, emailInput, phoneInput, subjectInput, msgInput].forEach(inp => { if (inp) inp.disabled = false; });
         startLogsClearTimer();
       }
     });
