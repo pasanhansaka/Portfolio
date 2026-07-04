@@ -385,6 +385,16 @@ function handleScroll() {
     }
   }
 
+  // Scroll to Top Button toggle
+  const toTopBtn = document.getElementById('scrollToTop');
+  if (toTopBtn) {
+    if (window.scrollY > 300) {
+      toTopBtn.classList.add('show');
+    } else {
+      toTopBtn.classList.remove('show');
+    }
+  }
+
   // 2. Timeline Progress Fill
   const tl = document.querySelector('.timeline');
   const tlBar = document.getElementById('tlProgress');
@@ -1130,9 +1140,9 @@ const TerminalConsole = (function shell() {
       case 'skills':
         printLine('--- Technical Arsenal ---', 'success-msg');
         printLine('Backend:  Java, Spring Boot, Node.js, Express, PHP, MySQL, MongoDB, Firebase');
-        printLine('Frontend: JS (ES6), TypeScript, React, Next.js, AngularJS, Tailwind, HTML/CSS');
-        printLine('Mobile:   React Native, Android Studio');
-        printLine('DevOps:   Docker, Git, Linux command line');
+        printLine('Frontend: JS (ES6), TypeScript, React, Next.js, AngularJS, Tailwind, HTML5, CSS3');
+        printLine('Mobile:   Android');
+        printLine('Tooling:  Git, GitHub, VS Code, IntelliJ, Maven, Postman, Linux, Figma, Adobe XD, Photoshop, Illustrator');
         break;
 
       case 'projects':
@@ -1550,8 +1560,51 @@ const ContactForm = (function contactFormModule() {
   return { init };
 })();
 
+/* ---------- MOBILE NAVIGATION & SCROLL TO TOP ---------- */
+function initMobileNavAndScrollTop() {
+  const mobileNavToggle = document.getElementById('mobileNavToggle');
+  const navlinks = document.querySelector('.navlinks');
+  
+  if (mobileNavToggle && navlinks) {
+    mobileNavToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      navlinks.classList.toggle('active');
+      const isActive = navlinks.classList.contains('active');
+      mobileNavToggle.textContent = isActive ? '[CLOSE]' : '[MENU_]';
+    });
+
+    // Close when clicking nav link
+    const navItems = navlinks.querySelectorAll('a, button:not(#mobileNavToggle)');
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        navlinks.classList.remove('active');
+        mobileNavToggle.textContent = '[MENU_]';
+      });
+    });
+
+    // Close when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!navlinks.contains(e.target) && !mobileNavToggle.contains(e.target) && navlinks.classList.contains('active')) {
+        navlinks.classList.remove('active');
+        mobileNavToggle.textContent = '[MENU_]';
+      }
+    });
+  }
+
+  const toTopBtn = document.getElementById('scrollToTop');
+  if (toTopBtn) {
+    toTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   TerminalConsole.init();
   CVViewer.init();
   ContactForm.init();
+  initMobileNavAndScrollTop();
 });
