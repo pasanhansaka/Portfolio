@@ -47,6 +47,16 @@ body{
   overflow-x:hidden;
   cursor:none;
   position:relative;
+  user-select:none;
+  -webkit-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
+}
+input, textarea {
+  user-select:text;
+  -webkit-user-select:text;
+  -moz-user-select:text;
+  -ms-user-select:text;
 }
 @media (max-width:860px){ body{ cursor:auto; } }
 ::selection{ background:var(--magenta); color:var(--void); }

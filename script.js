@@ -1607,4 +1607,13 @@ document.addEventListener('DOMContentLoaded', () => {
   CVViewer.init();
   ContactForm.init();
   initMobileNavAndScrollTop();
+
+  // Prevent copying static text, allowing it only on inputs/textareas
+  document.addEventListener('copy', (e) => {
+    const target = e.target;
+    if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+      return;
+    }
+    e.preventDefault();
+  });
 });
